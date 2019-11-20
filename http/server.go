@@ -206,6 +206,8 @@ var (
 
 // A conn represents the server side of an HTTP connection.
 type conn struct {
+	curState struct{ atomic uint64 } // packed (unixtime<<8|uint8(ConnState))
+
 	// server is the server on which the connection arrived.
 	// Immutable; never nil.
 	server *Server
@@ -245,8 +247,6 @@ type conn struct {
 	lastMethod string
 
 	curReq atomic.Value // of *response (which has a Request in it)
-
-	curState struct{ atomic uint64 } // packed (unixtime<<8|uint8(ConnState))
 }
 
 // This should be >= 512 bytes for DetectContentType,
